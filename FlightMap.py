@@ -94,8 +94,8 @@ def update():
 	flight_source.stream(flight_df.to_dict(orient="list"),n_roll)
 
 #API için kullanıcı adı ve şifre, çalışma alanı sınırları - Ücretsiz OpenSkyNetwork hesabı 
-user_name = "BerkeT"
-password = "1234"
+user_name = "****"
+password = "****"
 
 #Kod içinde sınır için kullanılan sayısal veriler.
 #Uçuş sınırları
