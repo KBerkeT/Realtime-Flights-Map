@@ -1,10 +1,10 @@
 import requests
 import pandas as pd
 from bokeh.plotting import figure, curdoc
-from bokeh.models import LabelSet, ColumnDataSource, DataTable,  TableColumn
+from bokeh.models import LabelSet, ColumnDataSource, DataTable,  TableColumn, Label,Panel, Tabs, CDSView, BooleanFilter
 from bokeh.tile_providers import get_provider, OSM
 import numpy as np
-from bokeh.layouts import Row
+from bokeh.layouts import Row, layout
 
 
 #Nokta koordinatları dönüştürmek için fonksiyon
@@ -79,11 +79,25 @@ def create_icon(fig, source):
 				angle="rot_angle", h_units="screen", w_units="screen",
 				h=IMAGE_H, w=IMAGE_W, source=url_source)
 
+#####################
+def altitude_filter(source,min_altitude,max_altitude):
+    alt_filter = [True if int(alti) > min_altitude and int(alti) <= max_altitude else False for alti in source.data["baro_altitude"]]
+    return alt_filter
+
+def create_circle(p,size,color,source,view,legend_label):
+    p.circle(x="X",y="Y",size=size,fill_color=color,line_color=color,legend_label=legend_label,view=view,fill_alpha=0.6,line_width=3,source=source) 
+###################
+
 def update():
 	response = requests.get(url).json() 
 	response = response["states"]      
 	url_data = df_format(response) #Uçuş haritası için gerekli format  
 	flight_df = country_plane(url_data,"origin_country") #Grafik için gerekli format
+
+	for i in range(len(alti_list)):
+		alti_filter = altitude_filter(url_source, alti_list[i], alti_list[i] + 2500)
+		view = CDSView(source = url_source,filters = [BooleanFilter(alti_filter)])
+		create_circle(p_filt, 4, color_list[i], url_source, view, f"{alti_list[i]}-{alti_list[i]+2500} m")
 
 	#url_source verilerini güncellemek için .stream kullanılıyor
 	n_roll=len(url_data.index)
@@ -94,8 +108,8 @@ def update():
 	flight_source.stream(flight_df.to_dict(orient="list"),n_roll)
 
 #API için kullanıcı adı ve şifre, çalışma alanı sınırları - Ücretsiz OpenSkyNetwork hesabı 
-user_name = "****"
-password = "****"
+user_name = "*****"
+password = "*****"
 
 #Kod içinde sınır için kullanılan sayısal veriler.
 #Uçuş sınırları
@@ -142,11 +156,20 @@ osmHarita = get_provider(OSM) #Altlık
 p.add_tile(osmHarita) #Altlık ekleme
 p.add_layout(labels)  #Çağrı adları yazan label ekleniyor
 
+p_filt = create_fig(FIGURE_W, FIGURE_H, x_range, y_range)
+alti_list = [0, 2500, 5000, 7500, 10000, 12500]
+color_list = ["aqua","blue","green","yellow","orange","red"]
+
+p_filt.add_tile(osmHarita)
+
+tab1 = Panel(child=p, title="Map")
+tab2 = Panel(child=p_filt, title="Filter")
+tab = Tabs(tabs=[tab1, tab2])
+
 #Veri tablosu oluşturuluyor
 columns = [TableColumn(field = "Country", title="Countrys"),TableColumn(field="planes",title="Planes")] #Veri tablosunun sütun isimleri 
 data_table = DataTable(source=flight_source, columns=columns)
 
-lay = Row(p, data_table)
-update()
+lay = Row(tab, data_table)
 doc.add_root(lay)
 # Server çalıştırmak için bokeh serve file_name.py
