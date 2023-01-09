@@ -260,7 +260,7 @@ Oluşturulan dinamik haritada altlık olarak OpenStreetMap kullanılmıştır. U
 
 ![statik_harita2](images/image3.png)
 
-### 3.3 Eklentiler
+### 3.3 İstatistik Bilgiler
 
 Dinamik harita oluşturulduktan sonra basit analizler yapılmıştır. İlk olarak harita Türkiye hava sahasında bulunan uçakların anlık olarak sayısı, hangi ülkeden kaç uçağın bulunduğu yazdırıldı. Bu istatistikler aynı zamanda bir veri tablosunda büyükten küçüğe sıralı şekilde gösterildi. Harita ve veri tablosu iki ayrı sekme içinde gösterildi.
 
