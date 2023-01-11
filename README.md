@@ -1,18 +1,67 @@
 # Dinamik Türkiye Uçuşlar Haritası
 
+## 1. ADS-B Anten Donanımı ile Uçuşlar Haritası
+
+Konum, hız ve tanımlama gibi değişken pADS-B uydu merkezli bir gözetleme sistemidir. arametreler, Mod S Genişletilmiş Squitter (1090 MHz band) aracılığıyla iletilir (LAUFER, 2018). Günümüzde uçakların çoğu sürekli olarak ADS-B mesajları yayınlamaktadır.  
+
+ADS-B receiver donanımından faydalanarak Python ile gerçek zamanlı Türkiye uçuşlar haritası üretmektir.  
+
+## 1.1. ADS-B Anten Kurulumu
+
+ADS-B anten donanımı kurulumu ve OpenSky Network’ e bağlanması hakkında çalışmalar yapılmıştır.  
+
+Başlamadan önce antenin kurulacağı yerin belirlenmesi önemlidir. Etrafında yapı olmamalı, her tarafı açık olmalı ve gökyüzünü net bir şekilde görmelidir.  
+
+![anten malzeme](images/anten1.jpg)
+
+Donanımın kurulumu için gerekli malzemeler:
+
+1. Raspberry Pİ 4 Model B 2gb ram
+2. Raspberry Pi 4 Alüminyum Çift Fanlı Muhafaza Kutusu
+3. Sandisk Ultra MicroSD Card 32GB
+4. Güç Adaptörü
+5. ADS-B 1090 MHz anten (Dişi konnektör)
+6. Rg174 Koaksiyel Kablo (Erkek-Erkek)
+7. RTL-SDR alıcı
+
+![anten](images/anten.jpg)
+
+ADS-B anten parçaları tedarik edildikten sonra kurulum yapılmıştır:
+
+1. Raspberry Pi kurulumu
+2. İşletim sistemi
+3. RTL-SDR alıcı sürücülerinin yüklenmesi
+4. Dump1090 kurulumu
+
+![dump1090web](images/dump1090.png)
+
+![dump1090etkilesimli](images/dump1090etki.png)
+
+Baz istasyonunu OpenSky a bağlama:
+
+- Raspberry için dinamik DNS kurun
+- 30005 bağlantı noktasını internetten erişilebilir hale getirin
+- OpenSky Network hesabı oluşturun
+- OpenSky Network üzerinde yeni bir sensör yapılandırın
+
+Raspberry Pi ile ADS-B anten kurulumu hakkında detaylı bilgi:  
+[openskynetwork/raspberry-pi-adsb](https://github.com/openskynetwork/raspberry-pi-adsb)
+
+## 2. Python Programlam Dili ile Uçuşlar Haritası
+
 Uçak hareketlerinin dinamik olarak izlenmesi amacı ile yaptığımız çalışma aşamaları şu şekildedir :
 
 1. Sürekli veri çekmek amacıyla Opensky Network üzerinde üyelik açılmıştır.
 2. Veri yapısını anlamak ve tasarlamak için araştırmalar yapılmıştır.
 3. Veri akışı ve yapısı anlaşıldıktan sonra programlamaya başlanmıştır.
 
-## 1. OpenSky Network Üyelik oluşturma
+## 2.1 OpenSky Network Üyelik oluşturma
 
 Bir harita çiziminin en önemli aşaması veri toplamadır. Özellikle dinamik bir harita çizmek istiyorsanız sürekli veri kullanmanız gerekmektedir. Bunun için uçuş bilgilerinin sürekli ve açık kaynak olarak paylaşıldığı OpenSky  Network üyeliği oluşturulmuştur.
 
 Üyelik oluşturmak için OpenSky Network adersine gidip çok basit bir şekilde üyelik oluşturabilirsiniz. Üyelik oluşturmak için bir mail adresiniz olması yeterlidir. Kullanıcı adınızı ve şifrenizi oluşturduktan sonra üyeliğiniz oluşmuş olacaktır.
 
-## 2. Veri Yapısını Anlamak Ve Tasarlamak
+## 2.2 Veri Yapısını Anlamak Ve Tasarlamak
 
 !!Daha önceki bölümlerde!!... bölümünde... veri yapısını anlamak için yaptığımız araştırmalar bulunmaktadır. Araştırmalar sonucu veriler Pythonun JSON kütüphanesi yardımıyla alınmıştır. Karışık olarak gelen verileri düzenlemek için Pandas kütüphanesi kullanılarak düzenli bir veri yapısı oluşturulmuştur.
 
@@ -42,7 +91,7 @@ Bir harita çiziminin en önemli aşaması veri toplamadır. Özellikle dinamik 
     memory usage: 13.6+ KB
     <class 'pandas.core.frame.DataFrame'>
 
-## 3. Programlama Aşamaları
+## 2.3 Programlama Aşamaları
 
 Kesintisiz veri akışı sağlandıktan ve veri yapısı tasarlandıktan sonra programlamaya başlamak için hazırlıklar tamamlanmıştır.Programlama daha düzenli ve hızlı ilerleyebilmek için bölümlere ayrılmıştır.
 
@@ -50,7 +99,7 @@ Kesintisiz veri akışı sağlandıktan ve veri yapısı tasarlandıktan sonra p
 2. Dinamik Gösterim
 3. Ekstralar
 
-### 3.1 Statik Gösterim
+### 2.3.1 Statik Gösterim
 
 Bir harita üzerinde belli bir andaki uçakların konumlarını ve bilgilerini göstermeye statik gösterim denir. Dinamik haritanın basitleştirilmiş halidir ve altyapısıda denebilir. Bu yüzden ilk aşama olarak tercih edilmiştir.
 
@@ -118,7 +167,7 @@ Oluşturulan haritada altlık olarak OpenStreetMap ve uçakları temsilen kırm�
 
 ![statik_harita](images/image1.png)
 
-### 3.2 Dinamik Gösterim
+### 2.3.2 Dinamik Gösterim
 
 Bir harita üzerinde uçakların konumlarını ve bilgilerini sürekli olarak göstermeye dinamik gösterim denir. Uçakların konumları güncel olarak değişmektedir ve sürekli olarak harita üzerinde hareket halindedirler.
 
@@ -260,7 +309,7 @@ Oluşturulan dinamik haritada altlık olarak OpenStreetMap kullanılmıştır. U
 
 ![statik_harita2](images/image3.png)
 
-### 3.3 İstatistik Bilgiler
+### 2.3.3 İstatistik Bilgiler
 
 Dinamik harita oluşturulduktan sonra basit analizler yapılmıştır. İlk olarak harita Türkiye hava sahasında bulunan uçakların anlık olarak sayısı, hangi ülkeden kaç uçağın bulunduğu yazdırıldı. Bu istatistikler aynı zamanda bir veri tablosunda büyükten küçüğe sıralı şekilde gösterildi. Harita ve veri tablosu iki ayrı sekme içinde gösterildi.
 
